@@ -2,7 +2,7 @@ plugins {
 	id 'java-library'
 	id 'net.researchgate.release' version '2.4.0'
 	id 'io.franzbecker.gradle-lombok' version '1.10'
-	id 'org.springframework.boot' version '1.5.7.RELEASE'
+	//id 'org.springframework.boot' version '1.5.7.RELEASE'
 }
 
 repositories {
