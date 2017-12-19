@@ -1,2 +1,26 @@
-/.classpath
-/.project
+# Ignore Gradle GUI config
+gradle-app.setting
+.gradle/
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+#IDEA
+*.iml
+*.ipr
+*.iws
+/bin/
+
+#Eclipse
+.classpath
+.project
+.settings/
+build/
+
+#VSCode
+classpath.txt
+javaconfig.json
+.vscode
