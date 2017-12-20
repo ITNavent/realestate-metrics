@@ -6,6 +6,7 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 
 ## Properties de configuracion
 
+```
 metrics:
   enabled: true
   endpoint.pattern: "" ej: "/v1/(ads|credits|reports).*"
@@ -13,7 +14,8 @@ metrics:
     serverHost: "zabbix.bumeran.biz" 
 	serverPort: 10051
 	listenPort: 10051
-	
+```
+
 ## Template en zabbix
 
 Spring JMX
