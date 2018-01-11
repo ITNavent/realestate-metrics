@@ -18,7 +18,7 @@ public class Metrics {
      * @param tags MUST be an even number of arguments representing key/value pairs of tags.
      */
     public static Counter counter(String name, String... tags) {
-        Counter c = io.micrometer.core.instrument.Metrics.counter(name, tags);
+    	Counter c = io.micrometer.core.instrument.Metrics.counter(name, tags);
         String hierarchicalName = HierarchicalNameMapper.DEFAULT.toHierarchicalName(c.getId(), NamingConvention.camelCase);
         customMetricRegistry.add(new ZabbixRegisteredMetric(hierarchicalName, ZabbixRegisteredMetricType.counter));
         return c;

@@ -64,6 +64,7 @@ public class MetricsConfig extends WebMvcConfigurerAdapter {
 		agent.setServerPort(metricsProperties.getZabbix().getServerPort());
 		agent.setRefreshInterval(60);
 		agent.addProvider("endpoint", endpointMetricsProvider);
+		agent.addProvider("counter", new CounterMetricsProvider());
 		agent.start();
 		return agent;
 	}

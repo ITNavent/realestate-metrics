@@ -13,6 +13,10 @@ import com.quigley.zabbixj.metrics.MetricsProvider;
 
 import lombok.val;
 
+/**
+ * Informa a zabbix metricas del tipo counter que hayan sido agregadas a través de {@see com.navent.realestate.metrics.Metrics#counter(String, String...)}
+ * @author bfalese
+ */
 public class CounterMetricsProvider implements MetricsProvider {
 
 	private ObjectMapper mapper = new ObjectMapper();
@@ -36,5 +40,4 @@ public class CounterMetricsProvider implements MetricsProvider {
 		}
 		return null;
 	}
-
 }
