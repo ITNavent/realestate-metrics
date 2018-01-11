@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.quigley.zabbixj.agent.ZabbixAgent;
 
+import io.micrometer.jmx.JmxConfig;
 import io.micrometer.spring.web.servlet.WebMvcTagsProvider;
 
 @Configuration
@@ -48,8 +49,8 @@ public class MetricsConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	@Autowired
-	public EndpointMetricsProvider endpointMetricsProvider(MetricsProperties metricsProperties) {
-		return new EndpointMetricsProvider(metricsProperties);
+	public EndpointMetricsProvider endpointMetricsProvider(JmxConfig config, MetricsProperties metricsProperties) {
+		return new EndpointMetricsProvider(config, metricsProperties);
 	}
 
 	@Bean

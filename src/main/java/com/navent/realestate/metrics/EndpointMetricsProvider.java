@@ -22,6 +22,7 @@ import com.quigley.zabbixj.metrics.MetricsException;
 import com.quigley.zabbixj.metrics.MetricsKey;
 import com.quigley.zabbixj.metrics.MetricsProvider;
 
+import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 import lombok.val;
 
@@ -31,7 +32,8 @@ public class EndpointMetricsProvider extends JmxMeterRegistry implements Metrics
 	private ObjectMapper mapper = new ObjectMapper();
 	private Pattern pattern;
 
-	public EndpointMetricsProvider(MetricsProperties metricsProperties) {
+	public EndpointMetricsProvider(JmxConfig config, MetricsProperties metricsProperties) {
+		super(config);
 		this.pattern = Pattern.compile(metricsProperties.getEndpoint().getPattern());
 	}
 
