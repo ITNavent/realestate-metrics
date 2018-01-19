@@ -20,4 +20,4 @@ metrics:
 
 ## Template en zabbix
 
-Spring JMX
+Agregar en zabbix el temaplate **Springboot JMX**
