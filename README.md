@@ -11,11 +11,11 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 ```
 metrics:
   enabled: true
-  endpoint.pattern: "" ej: "/v1/(ads|credits|reports).*"
+  endpoint.pattern: "/v1/(ads|credits|reports).*"
   zabbix:
     serverHost: "zabbix.bumeran.biz" 
-	serverPort: 10051
-	listenPort: 10051
+    serverPort: 10051
+    listenPort: 10051
 ```
 
 ## Template en zabbix
