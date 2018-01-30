@@ -29,10 +29,10 @@ jar {
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
 	api('javax.servlet:javax.servlet-api:3.1.0')
-	api('io.micrometer:micrometer-core:latest.release')
+	api('io.micrometer:micrometer-core:1.0.0-rc.5')
 	api('com.quigley:zabbixj:3')
-	api('io.micrometer:micrometer-spring-legacy:latest.release')
-	api('io.micrometer:micrometer-registry-jmx:latest.release')
+	api('io.micrometer:micrometer-spring-legacy:1.0.0-rc.5')
+	api('io.micrometer:micrometer-registry-jmx:1.0.0-rc.5')
 
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
 	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.9')
