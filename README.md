@@ -8,16 +8,18 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 
 ## Properties de configuracion
 
+Abajo figuran los parametros configurables del paquete, el unico que no tiene un valor por defecto util es *metrics.endpoint.pattern* ya que es especifico de la aplicacion en cuestion, el resto salvo excepciones no haria falta sobreescribirlos.
+
 ```
 metrics:
   enabled: true
-  endpoint.pattern: "" ej: "/v1/(ads|credits|reports).*"
+  endpoint.pattern: "/v1/(ads|credits|reports).*"
   zabbix:
     serverHost: "zabbix.bumeran.biz" 
-	serverPort: 10051
-	listenPort: 10051
+    serverPort: 10051
+    listenPort: 10051
 ```
 
 ## Template en zabbix
 
-Spring JMX
+Agregar en zabbix el temaplate **Springboot JMX**
