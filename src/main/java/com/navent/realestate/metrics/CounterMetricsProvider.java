@@ -28,7 +28,7 @@ public class CounterMetricsProvider implements MetricsProvider {
 			values.put("data", Metrics.getCustomMetricRegistryView().stream()
 				.filter(e -> e.getType().equals(ZabbixRegisteredMetricType.counter))
 				.map(e -> {
-					val entry = new HashMap<String, Object>(2);
+					val entry = new HashMap<String, Object>(1);
 					entry.put("{#COUNTERNAME}", e.getName());
 					return entry;
 				}).collect(Collectors.toList()));

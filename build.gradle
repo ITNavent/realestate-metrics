@@ -34,6 +34,10 @@ dependencies {
 	api('io.micrometer:micrometer-spring-legacy:1.0.0-rc.7')
 	api('io.micrometer:micrometer-registry-jmx:1.0.0-rc.7')
 
+	api('io.opentracing.brave:brave-opentracing:0.26.0')
+	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.3.1')
+	api('io.opentracing.contrib:opentracing-spring-cloud-starter:0.1.0')
+
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
 	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.9')
 	compileOnly('org.springframework.boot:spring-boot-autoconfigure:1.5.6.RELEASE')
