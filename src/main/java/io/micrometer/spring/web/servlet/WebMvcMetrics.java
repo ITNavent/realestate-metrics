@@ -115,7 +115,9 @@ public class WebMvcMetrics {
 	}
 
 	void preHandle(HttpServletRequest request, Object handler) {
-		request.setAttribute(TIMING_REQUEST_ATTRIBUTE, System.nanoTime());
+		if (request.getAttribute(TIMING_REQUEST_ATTRIBUTE) == null) {
+			request.setAttribute(TIMING_REQUEST_ATTRIBUTE, System.currentTimeMillis());
+        }
 		request.setAttribute(HANDLER_REQUEST_ATTRIBUTE, handler);
 		longTaskTimed(handler).forEach((config) -> {
 			if (config.getName() == null) {
@@ -139,7 +141,7 @@ public class WebMvcMetrics {
 	void record(HttpServletRequest request, HttpServletResponse response, Throwable ex) {
 		Object handler = request.getAttribute(HANDLER_REQUEST_ATTRIBUTE);
 		Long startTime = (Long) request.getAttribute(TIMING_REQUEST_ATTRIBUTE);
-		long endTime = System.nanoTime();
+		long endTime = System.currentTimeMillis();
 		completeLongTimerTasks(request, handler);
 		Throwable thrown = (ex != null ? ex : (Throwable) request.getAttribute(EXCEPTION_ATTRIBUTE));
 		recordTimerTasks(request, response, handler, startTime, endTime, thrown);
@@ -164,10 +166,10 @@ public class WebMvcMetrics {
 			Long startTime, long endTime, Throwable thrown) {
 		long amount = endTime - startTime;
 		timed(handler).forEach((config) -> {
-			getTimerBuilder(request, response, thrown, config).register(this.registry).record(amount, TimeUnit.NANOSECONDS);
+			getTimerBuilder(request, response, thrown, config).register(this.registry).record(amount, TimeUnit.MILLISECONDS);
 			getCounterBuilder(request, response, thrown).register(this.registry).increment();
 
-			appTimer.record(amount, TimeUnit.NANOSECONDS);
+			appTimer.record(amount, TimeUnit.MILLISECONDS);
 
 			Counter appResponseCounter = (thrown==null)? appResponseOkCounter: appResponseNokCounter;
 			appResponseCounter.increment();
