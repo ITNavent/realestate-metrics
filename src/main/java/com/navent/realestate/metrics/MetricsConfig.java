@@ -13,12 +13,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.quigley.zabbixj.agent.ZabbixAgent;
 
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.dropwizard.NaventJmxMeterRegistry;
+import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.jmx.JmxConfig;
+import io.micrometer.spring.autoconfigure.export.MetricsExporter;
 import io.micrometer.spring.web.servlet.WebMvcTagsProvider;
 
 @Configuration
@@ -48,8 +53,16 @@ public class MetricsConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
+    public MetricsExporter jmxMeterRegistry(JmxConfig config, HierarchicalNameMapper nameMapper, Clock clock, MetricsProperties metricsProperties) {
+        return () -> new NaventJmxMeterRegistry(config, nameMapper, clock, metricsProperties);
+    }
+
+	@Bean
 	@Autowired
 	public EndpointMetricsProvider endpointMetricsProvider(JmxConfig config, MetricsProperties metricsProperties) {
+		if(metricsProperties.getApdex().isEnabled()) {
+			Assert.notNull(metricsProperties.getApdex().getMillis(), "Metrics apdex satisfied is mandatory with apdex enabled");
+		}
 		return new EndpointMetricsProvider(config, metricsProperties);
 	}
 

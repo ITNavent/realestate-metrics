@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,17 +22,15 @@ import com.quigley.zabbixj.metrics.MetricsKey;
 import com.quigley.zabbixj.metrics.MetricsProvider;
 
 import io.micrometer.jmx.JmxConfig;
-import io.micrometer.jmx.JmxMeterRegistry;
 import lombok.val;
 
-public class EndpointMetricsProvider extends JmxMeterRegistry implements MetricsProvider {
+public class EndpointMetricsProvider implements MetricsProvider {
 
 	private List<Pair<String, String>> endpoints = new LinkedList<>();
 	private ObjectMapper mapper = new ObjectMapper();
 	private Pattern pattern;
 
 	public EndpointMetricsProvider(JmxConfig config, MetricsProperties metricsProperties) {
-		super(config);
 		this.pattern = Pattern.compile(metricsProperties.getEndpoint().getPattern());
 	}
 
@@ -69,10 +66,5 @@ public class EndpointMetricsProvider extends JmxMeterRegistry implements Metrics
 			}
 		}
 		return null;
-	}
-
-	@Override
-	protected TimeUnit getBaseTimeUnit() {
-		return TimeUnit.SECONDS;
 	}
 }

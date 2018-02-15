@@ -2,6 +2,7 @@ plugins {
 	id 'java-library'
 	id 'net.researchgate.release' version '2.4.0'
 	id 'io.franzbecker.gradle-lombok' version '1.10'
+	id 'eclipse'
 	//id 'org.springframework.boot' version '1.5.7.RELEASE'
 }
 
@@ -38,12 +39,14 @@ dependencies {
 	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.3.1')
 	api('io.opentracing.contrib:opentracing-spring-cloud-starter:0.1.0')
 
+	api('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.3')
+
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
 	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.9')
 	compileOnly('org.springframework.boot:spring-boot-autoconfigure:1.5.6.RELEASE')
 	compileOnly("org.springframework.boot:spring-boot-starter-actuator:1.5.6.RELEASE")
 	compileOnly('org.apache.commons:commons-lang3:3.5')
-	
+
 	// Use JUnit test framework
 	//testImplementation 'junit:junit:4.12'
 }

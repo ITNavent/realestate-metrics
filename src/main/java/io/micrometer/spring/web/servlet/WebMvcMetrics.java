@@ -15,20 +15,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
+import com.navent.realestate.metrics.MetricsProperties;
+import com.navent.realestate.metrics.MetricsProperties.Apdex;
+
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.dropwizard.NaventJmxMeterRegistry;
 import io.micrometer.spring.TimedUtils;
 
+@Component
 public class WebMvcMetrics {
 	private static final String TIMING_REQUEST_ATTRIBUTE = "micrometer.requestStartTime";
 
@@ -50,18 +58,55 @@ public class WebMvcMetrics {
 
 	private final boolean recordAsPercentiles;
 
-	private final Timer.Builder appTimerBuilder;
+	private final Timer appTimer;
+	private Counter appApdexSatisfied;
+	private Counter appApdexTolerating;
+	private Counter appApdexTotal;
+
+	private Counter appResponseOkCounter;
+	private Counter appResponseNokCounter;
+
+	final static Iterable<Tag> appTags = Arrays.asList(Tag.of("uri", "root"));
+
+	private Apdex apdex;
+	private Long apdexToleratingLimit;
 
 	public WebMvcMetrics(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
                          String metricName, boolean autoTimeRequests, boolean recordAsPercentiles) {
         this.registry = registry;
+
         this.tagsProvider = tagsProvider;
         this.metricName = metricName;
         this.autoTimeRequests = autoTimeRequests;
         this.recordAsPercentiles = recordAsPercentiles;
-        
+
         TimerConfig rootTimerConfig = new TimerConfig(getServerRequestName(), this.recordAsPercentiles);
-        appTimerBuilder = getAppTimerBuilder(rootTimerConfig);
+        appTimer = getAppTimerBuilder(rootTimerConfig).register(this.registry);
+
+        appResponseOkCounter = Counter.builder(getServerRequestName())
+        		.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("response", "ok"))).description("App response window counter")
+        		.register(this.registry);
+        appResponseNokCounter = Counter.builder(getServerRequestName())
+        		.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("response", "nok"))).description("App response window counter")
+        		.register(this.registry);
+
+        MetricsProperties props = getMetricsProperties();
+        if(props != null) {
+        	apdex = props.getApdex();
+
+        	if(apdex.isEnabled()) {
+        		apdexToleratingLimit = apdex.getMillis() * 4;
+        		appApdexSatisfied = Counter.builder(getServerRequestName())
+        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "satisfied")))
+        				.description("App apdex satisfied window counter").register(this.registry);
+        		appApdexTolerating = Counter.builder(getServerRequestName())
+        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "tolerating")))
+        				.description("App apdex tolerating window counter").register(this.registry);
+        		appApdexTotal = Counter.builder(getServerRequestName())
+        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "total")))
+        				.description("App apdex total window counter").register(this.registry);
+        	}
+        }
     }
 
 	public void tagWithException(Throwable exception) {
@@ -117,12 +162,24 @@ public class WebMvcMetrics {
 
 	private void recordTimerTasks(HttpServletRequest request, HttpServletResponse response, Object handler,
 			Long startTime, long endTime, Throwable thrown) {
-		// record Timer values
 		long amount = endTime - startTime;
 		timed(handler).forEach((config) -> {
-			Timer.Builder builder = getTimerBuilder(request, response, thrown, config);
-			builder.register(this.registry).record(amount, TimeUnit.NANOSECONDS);
-			appTimerBuilder.register(this.registry).record(amount, TimeUnit.NANOSECONDS);
+			getTimerBuilder(request, response, thrown, config).register(this.registry).record(amount, TimeUnit.NANOSECONDS);
+			getCounterBuilder(request, response, thrown).register(this.registry).increment();
+
+			appTimer.record(amount, TimeUnit.NANOSECONDS);
+
+			Counter appResponseCounter = (thrown==null)? appResponseOkCounter: appResponseNokCounter;
+			appResponseCounter.increment();
+
+			if(apdex.isEnabled()) {
+				appApdexTotal.increment();
+				if(amount <= apdex.getMillis()) {
+					appApdexSatisfied.increment();
+				} else if(amount > apdex.getMillis() && amount <= apdexToleratingLimit) {
+					appApdexTolerating.increment();
+				}
+			}
 		});
 	}
 
@@ -137,7 +194,13 @@ public class WebMvcMetrics {
 		return builder;
 	}
 
-	final static Iterable<Tag> appTags = Arrays.asList(Tag.of("uri", "root")); 
+	private Counter.Builder getCounterBuilder(HttpServletRequest request, HttpServletResponse response, Throwable thrown) {
+		Counter.Builder builder = Counter.builder(getServerRequestName())
+				.tags(this.tagsProvider.httpRequestTags(request, response, thrown))
+				.tags(Tags.of("response", (thrown == null)?"ok":"nok"))
+				.description("Window counter of servlet ok request");
+		return builder;
+	}
 
 	private Timer.Builder getAppTimerBuilder(TimerConfig config) {
 		Timer.Builder builder = Timer.builder(config.getName()).tags(appTags)
@@ -206,6 +269,17 @@ public class WebMvcMetrics {
 		return this.metricName;
 	}
 
+	private MetricsProperties getMetricsProperties() {
+		if(registry instanceof CompositeMeterRegistry) {
+			for (MeterRegistry reg : ((CompositeMeterRegistry) registry).getRegistries()) {
+				if(reg instanceof NaventJmxMeterRegistry) {
+					return ((NaventJmxMeterRegistry) reg).getMetricsProperties();
+				}
+			}
+		}
+		return null;
+	}
+
 	private static class TimerConfig {
 
 		private final String name;
@@ -272,6 +346,5 @@ public class WebMvcMetrics {
 		public int hashCode() {
 			return ObjectUtils.nullSafeHashCode(this.name);
 		}
-
 	}
 }

@@ -13,6 +13,7 @@ public class MetricsProperties {
 	private Endpoint endpoint = new Endpoint();
 	private Zabbix zabbix = new Zabbix();
 	private Trace trace = new Trace();
+	private Apdex apdex = new Apdex();
 
 	@Data
 	@NoArgsConstructor
@@ -34,5 +35,12 @@ public class MetricsProperties {
 		private String serverHost = "zabbix.bumeran.biz";
 		private int serverPort = 10051;
 		private int listenPort = 10051;
+	}
+
+	@Data
+	@NoArgsConstructor
+	public static class Apdex {
+		private boolean enabled;
+		private long millis;
 	}
 }
