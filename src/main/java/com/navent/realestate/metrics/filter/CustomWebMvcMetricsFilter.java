@@ -1,8 +1,9 @@
 package com.navent.realestate.metrics.filter;
 
-import com.navent.realestate.metrics.NaventMetricsProperties;
-import com.navent.realestate.metrics.NaventMetricsProperties.Apdex;
+import com.navent.realestate.metrics.config.NaventMetricsProperties;
+import com.navent.realestate.metrics.config.NaventMetricsProperties.Apdex;
 
+import org.assertj.core.internal.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
@@ -69,12 +70,11 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private final String metricName;
 
-	private final boolean autoTimeRequests;
-
+	private final NaventMetricsProperties metricsProperties;
+	
 	private volatile HandlerMappingIntrospector introspector;
-
+	
 	final static Iterable<Tag> appTags = Arrays.asList(Tag.of("uri", "root"));
-	private NaventMetricsProperties metricsProperties;
 
 	private final Timer appTimer;
 	private Counter appApdexSatisfied;
@@ -97,12 +97,12 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
 	 */
 	public CustomWebMvcMetricsFilter(ApplicationContext context, MeterRegistry registry,
 			WebMvcTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
+			boolean autoTimeRequests, NaventMetricsProperties metricsProperties) {
 		this.context = context;
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
-		this.autoTimeRequests = autoTimeRequests;
+		this.metricsProperties = metricsProperties;
 
 		appTimer = getAppTimerBuilder(this.metricName, appTags, false).register(this.registry);
 		appResponseOkCounter = Counter.builder(this.metricName)
@@ -112,8 +112,8 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
         		.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("response", "nok"))).description("App response window counter")
         		.register(this.registry);
 
-        if(metricsProperties != null) {
-        	apdex = metricsProperties.getApdex();
+        if(this.metricsProperties != null) {
+        	apdex = this.metricsProperties.getApdex();
 
         	if(apdex.isEnabled()) {
         		apdexToleratingLimit = apdex.getMillis() * 4;
@@ -127,6 +127,9 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
         				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "total")))
         				.description("App apdex total window counter").register(this.registry);
         	}
+        } else {
+        	apdex = new Apdex();
+        	apdex.setEnabled(false);
         }
 	}
 
@@ -250,35 +253,34 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
 	private void record(TimingContext timingContext, HttpServletResponse response,
 			HttpServletRequest request, Object handlerObject, Throwable exception) {
 		Timer.Sample timerSample = timingContext.getTimerSample();
-		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
-				handlerObject, exception);
-		/*for (Timed annotation : timingContext.getAnnotations()) {
-			stop(timerSample, tags, Timer.builder(annotation, this.metricName));
-		}
-		if (timingContext.getAnnotations().isEmpty() && this.autoTimeRequests) {*/
-			long duration = stop(timerSample, tags, Timer.builder(this.metricName));
-			long durationMs = TimeUnit.NANOSECONDS.toMillis(duration);
-			recordCustomAppMetrics(durationMs, exception);
-			recordCustomRequestMetrics(durationMs, response, request, handlerObject, exception);
-		//}
-		/*for (LongTaskTimer.Sample sample : timingContext.getLongTaskTimerSamples()) {
-			sample.stop();
-		}*/
+		Supplier<Iterable<Tag>> tags = () -> Collections.emptyList();
+		long duration = stop(timerSample, tags, getAppTimerBuilder(this.metricName, appTags, false));
+		long durationMs = TimeUnit.NANOSECONDS.toMillis(duration);
+		recordCustomAppMetrics(durationMs, exception);
+		recordCustomRequestMetrics(durationMs, response, request, handlerObject, exception);
 	}
 
 	private void recordCustomRequestMetrics(long durationMs, HttpServletResponse response,
 			HttpServletRequest request, Object handlerObject, Throwable exception) {
-		Counter.Builder builder = Counter.builder(this.metricName)
+		Counter counterOk = Counter.builder(this.metricName)
 				.tags(this.tagsProvider.getTags(request, response, handlerObject, exception))
-				.tags(Tags.of("response", (exception == null)? "ok": "nok"))
-				.description("Window counter of servlet ok request");
-		builder.register(this.registry);
+				.tags(Tags.of("response", "ok"))
+				.description("Window counter of servlet ok request")
+				.register(registry);
+		Counter counterNok = Counter.builder(this.metricName)
+				.tags(this.tagsProvider.getTags(request, response, handlerObject, exception))
+				.tags(Tags.of("response", "nok"))
+				.description("Window counter of servlet nok request")
+				.register(registry);
+		if(exception == null) { 
+			counterOk.increment();
+		} else {
+			counterNok.increment();
+		}
 	}
 
 	@SuppressWarnings("resource")
 	private void recordCustomAppMetrics(long durationMs, Throwable exception) {
-		appTimer.record(durationMs, TimeUnit.MILLISECONDS);
-
 		Counter appResponseCounter = (exception == null)? appResponseOkCounter: appResponseNokCounter;
 		appResponseCounter.increment();
 
@@ -290,8 +292,6 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
 				appApdexTolerating.increment();
 			}
 		}
-
-		
 	}
 
 	private long stop(Timer.Sample timerSample, Supplier<Iterable<Tag>> tags,

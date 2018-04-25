@@ -1,5 +1,8 @@
 package com.navent.realestate.metrics;
 
+import com.navent.realestate.metrics.zabbixj.ZabbixRegisteredMetric;
+import com.navent.realestate.metrics.zabbixj.ZabbixRegisteredMetricType;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

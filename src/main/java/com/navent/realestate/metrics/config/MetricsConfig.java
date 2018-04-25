@@ -1,6 +1,10 @@
-package com.navent.realestate.metrics;
+package com.navent.realestate.metrics.config;
 
+import com.navent.realestate.metrics.CustomWebMvcTagsProvider;
 import com.navent.realestate.metrics.filter.CustomWebMvcMetricsFilter;
+import com.navent.realestate.metrics.filter.MetricsInterceptor;
+import com.navent.realestate.metrics.zabbixj.CounterMetricsProvider;
+import com.navent.realestate.metrics.zabbixj.EndpointMetricsProvider;
 import com.quigley.zabbixj.agent.ZabbixAgent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.dropwizard.NaventJmxMeterRegistry;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.jmx.JmxConfig;
+import io.micrometer.jmx.JmxMeterRegistry;
 
 @Configuration
 @EnableConfigurationProperties(MetricsProperties.class)
@@ -37,38 +42,24 @@ public class MetricsConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new MetricsInterceptor());
 	}
 
-	/*@Bean
-	@ExportMetricWriter
-	public MetricWriter metricWriter(MBeanExporter exporter) {
-		return new JmxMetricWriter(exporter);
-	}*/
-
-	/*@Bean
-	public MetricsEndpointMetricReader metricsEndpointMetricReader(MetricsEndpoint metricsEndpoint) {
-		return new MetricsEndpointMetricReader(metricsEndpoint);
-	}*/
-
 	@Bean
 	public WebMvcTagsProvider webmvcTagConfigurer() {
 		return new CustomWebMvcTagsProvider();
 	}
 
-//	@Bean
-//    public MetricsExporter jmxMeterRegistry(JmxConfig config, HierarchicalNameMapper nameMapper, Clock clock, NaventMetricsProperties metricsProperties) {
-//        return () -> new NaventJmxMeterRegistry(config, nameMapper, clock, metricsProperties);
-//    }
 	@Bean
-    public NaventJmxMeterRegistry jmxMeterRegistry(JmxConfig config, HierarchicalNameMapper nameMapper, Clock clock, NaventMetricsProperties metricsProperties) {
-        return new NaventJmxMeterRegistry(config, nameMapper, clock, metricsProperties);
+    public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+		HierarchicalNameMapper nameMapper = HierarchicalNameMapper.DEFAULT;
+        return new NaventJmxMeterRegistry(config, nameMapper, clock);
     }
 
 	@Bean
 	public FilterRegistrationBean<CustomWebMvcMetricsFilter> customWebMvcMetricsFilter(MeterRegistry registry, 
-			MetricsProperties properties, WebMvcTagsProvider tagsProvider, WebApplicationContext context) {
+			MetricsProperties properties, WebMvcTagsProvider tagsProvider, WebApplicationContext context, NaventMetricsProperties metricsProperties) {
 		Server serverProperties = properties.getWeb().getServer();
 		CustomWebMvcMetricsFilter filter = new CustomWebMvcMetricsFilter(context, registry,
 				tagsProvider, serverProperties.getRequestsMetricName(),
-				serverProperties.isAutoTimeRequests());
+				serverProperties.isAutoTimeRequests(), metricsProperties);
 		FilterRegistrationBean<CustomWebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
 				filter);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

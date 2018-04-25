@@ -1,4 +1,4 @@
-package com.navent.realestate.metrics;
+package com.navent.realestate.metrics.zabbixj;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

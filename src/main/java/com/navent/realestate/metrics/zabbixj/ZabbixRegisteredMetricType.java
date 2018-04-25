@@ -1,4 +1,4 @@
-package com.navent.realestate.metrics;
+package com.navent.realestate.metrics.zabbixj;
 
 public enum ZabbixRegisteredMetricType {
 	counter;

@@ -1,7 +1,7 @@
 plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.12'
 	id 'java-library'
 	id 'net.researchgate.release' version '2.4.0'
-	id 'io.franzbecker.gradle-lombok' version '1.10'
 	id 'eclipse'
 	//id 'org.springframework.boot' version '1.5.7.RELEASE'
 }
@@ -14,10 +14,10 @@ repositories {
     jcenter()
 }
 
-lombok {
+/*lombok {
 	version = "1.16.18"
 	sha256 = ""
-}
+}*/
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

@@ -1,4 +1,4 @@
-package com.navent.realestate.metrics;
+package com.navent.realestate.metrics.zabbixj;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.navent.realestate.metrics.config.NaventMetricsProperties;
 import com.quigley.zabbixj.metrics.MetricsException;
 import com.quigley.zabbixj.metrics.MetricsKey;
 import com.quigley.zabbixj.metrics.MetricsProvider;
