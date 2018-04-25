@@ -8,7 +8,19 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 
 ## Versiones
 
-A partir de la version 0.0.6 se suma tracing de operacion gracias a http://opentracing.io/
+### Version 0.1.0
+
+Primera version con soporte Springboot 2.
+
+Ya no es necesario desactivar y de hecho no funciona si esta desactivado:
+```
+management:
+  metrics.export:
+    jmx.enabled: false
+```
+Por lo que se __debe__ borrar esa parte de la configuracion.
+
+### Version 0.0.7
 
 A partir de la version 0.0.7 se suman métricas de error rate a nivel aplicacion y a nivel endpoint. Además se agrega el apdex a nivel aplicacion. https://en.wikipedia.org/wiki/Apdex 
 
@@ -20,6 +32,9 @@ management:
 ```
 Esto es necesario para poder agregar nuevos tipos de contadores, includos en la version 0.0.7
 
+###Version 0.0.6
+ 
+Se suma tracing de operacion gracias a http://opentracing.io/
 
 ## Properties de configuracion
 
