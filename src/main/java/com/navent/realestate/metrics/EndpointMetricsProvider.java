@@ -30,7 +30,7 @@ public class EndpointMetricsProvider implements MetricsProvider {
 	private ObjectMapper mapper = new ObjectMapper();
 	private Pattern pattern;
 
-	public EndpointMetricsProvider(JmxConfig config, MetricsProperties metricsProperties) {
+	public EndpointMetricsProvider(JmxConfig config, NaventMetricsProperties metricsProperties) {
 		this.pattern = Pattern.compile(metricsProperties.getEndpoint().getPattern());
 	}
 

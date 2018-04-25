@@ -1,25 +1,25 @@
 package com.navent.realestate.metrics;
 
 
-import java.util.Arrays;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.spring.web.servlet.WebMvcTags;
-import io.micrometer.spring.web.servlet.WebMvcTagsProvider;
+import io.micrometer.core.instrument.Tags;
 
 public class CustomWebMvcTagsProvider implements WebMvcTagsProvider {
 
 	@Override
-	public Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, null));
+	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
+			Object handler, Throwable exception) {
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response));
 	}
 
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request, HttpServletResponse response, Throwable ex) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, response)/*,
-	            WebMvcTags.exception(ex), WebMvcTags.status(response)*/);
+	public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, null));
 	}
 }

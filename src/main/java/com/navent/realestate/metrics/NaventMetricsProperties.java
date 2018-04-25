@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @ConfigurationProperties("metrics")
-public class MetricsProperties {
+public class NaventMetricsProperties {
 	private boolean enabled;
 	private Endpoint endpoint = new Endpoint();
 	private Zabbix zabbix = new Zabbix();
