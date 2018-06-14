@@ -5,6 +5,7 @@ import com.navent.realestate.metrics.filter.CustomWebMvcMetricsFilter;
 import com.navent.realestate.metrics.filter.MetricsInterceptor;
 import com.navent.realestate.metrics.zabbixj.CounterMetricsProvider;
 import com.navent.realestate.metrics.zabbixj.EndpointMetricsProvider;
+import com.navent.realestate.metrics.zabbixj.GaugeMetricsProvider;
 import com.quigley.zabbixj.agent.ZabbixAgent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,7 @@ public class MetricsConfig implements WebMvcConfigurer {
 		agent.setRefreshInterval(60);
 		agent.addProvider("endpoint", endpointMetricsProvider);
 		agent.addProvider("counter", new CounterMetricsProvider());
+		agent.addProvider("gauge", new GaugeMetricsProvider());
 		agent.start();
 		return agent;
 	}
