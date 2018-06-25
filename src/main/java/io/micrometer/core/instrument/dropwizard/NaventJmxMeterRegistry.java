@@ -1,16 +1,20 @@
 package io.micrometer.core.instrument.dropwizard;
 
+import com.codahale.metrics.Gauge;
 import com.navent.realestate.metrics.meter.SmoothlyDecayingRollingCounterMeter;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.ref.WeakReference;
 import java.time.Duration;
+import java.util.function.ToDoubleFunction;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
+import io.micrometer.core.lang.Nullable;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 
@@ -41,7 +45,34 @@ public class NaventJmxMeterRegistry extends JmxMeterRegistry {
     	getDropwizardRegistry().register(hierarchicalName(id), meter);
         return new DropwizardCounter(id, meter);
     }
-	
+
+	@Override
+    protected <T> io.micrometer.core.instrument.Gauge newGauge(Meter.Id id, @Nullable T obj, ToDoubleFunction<T> valueFunction) {
+        final WeakReference<T> ref = new WeakReference<>(obj);
+        Gauge gauge = null;
+        if(Long.class.isAssignableFrom(obj.getClass())) {
+        	gauge = () -> {
+        		T obj2 = ref.get();
+        		if (obj2 != null) {
+        			return ((Long) obj2).longValue();
+        		} else {
+        			return nullGaugeValue();
+        		}
+            };
+        } else {
+        	gauge = () -> {
+        		T obj2 = ref.get();
+        		if (obj2 != null) {
+        			return valueFunction.applyAsDouble(obj2);
+        		} else {
+        			return nullGaugeValue();
+        		}
+        	};
+        }
+        getDropwizardRegistry().register(hierarchicalName(id), gauge);
+        return new DropwizardGauge(id, gauge);
+    }
+
 	private String hierarchicalName(Meter.Id id) {
         return nameMapper.toHierarchicalName(id, config().namingConvention());
     }
