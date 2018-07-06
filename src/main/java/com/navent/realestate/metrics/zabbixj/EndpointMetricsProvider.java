@@ -45,7 +45,7 @@ public class EndpointMetricsProvider implements MetricsProvider {
 			String uri = h.getKey().getPatternsCondition().getPatterns().iterator().next();
 			if (pattern.matcher(uri).matches()) {
 				String method = h.getKey().getMethodsCondition().getMethods().iterator().next().toString();
-				endpoints.add(Pair.of(uri, method.replaceAll("\\*", "")));
+				endpoints.add(Pair.of(uri.replaceAll("\\*", ""), method));
 			}
 		});
 	}
