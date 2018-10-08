@@ -201,7 +201,11 @@ public class CustomWebMvcMetricsFilter extends OncePerRequestFilter {
 			}
 		}
 		catch (NestedServletException ex) {
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			if((ex.getCause() != null) && StatusException.class.isInstance(ex.getCause())) {
+				response.setStatus(((StatusException)ex.getCause()).getStatusCode());
+			} else {
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
 			record(timingContext, response, request, handler, ex.getCause());
 			throw ex;
 		}
