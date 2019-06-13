@@ -66,8 +66,6 @@ public class WebMvcMetrics {
 	private Counter appResponseOkCounter;
 	private Counter appResponseNokCounter;
 
-	final static Iterable<Tag> appTags = Arrays.asList(Tag.of("uri", "root"));
-
 	private Apdex apdex;
 	private Long apdexToleratingLimit;
 
@@ -80,14 +78,14 @@ public class WebMvcMetrics {
         this.autoTimeRequests = autoTimeRequests;
         this.recordAsPercentiles = recordAsPercentiles;
 
-        TimerConfig rootTimerConfig = new TimerConfig(getServerRequestName(), this.recordAsPercentiles);
+        TimerConfig rootTimerConfig = new TimerConfig(getServerRequestName() + ".uri.root", this.recordAsPercentiles);
         appTimer = getAppTimerBuilder(rootTimerConfig).register(this.registry);
 
-        appResponseOkCounter = Counter.builder(getServerRequestName())
-        		.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("response", "ok"))).description("App response window counter")
+        appResponseOkCounter = Counter.builder(getServerRequestName()+ ".uri.root.response.ok")
+        		.description("App response window counter")
         		.register(this.registry);
-        appResponseNokCounter = Counter.builder(getServerRequestName())
-        		.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("response", "nok"))).description("App response window counter")
+        appResponseNokCounter = Counter.builder(getServerRequestName() + ".uri.root.response.nok")
+        		.description("App response window counter")
         		.register(this.registry);
 
         MetricsProperties props = getMetricsProperties();
@@ -96,14 +94,11 @@ public class WebMvcMetrics {
 
         	if(apdex.isEnabled()) {
         		apdexToleratingLimit = apdex.getMillis() * 4;
-        		appApdexSatisfied = Counter.builder(getServerRequestName())
-        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "satisfied")))
+        		appApdexSatisfied = Counter.builder(getServerRequestName() + ".uri.root.apdex.satisfied")
         				.description("App apdex satisfied window counter").register(this.registry);
-        		appApdexTolerating = Counter.builder(getServerRequestName())
-        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "tolerating")))
+        		appApdexTolerating = Counter.builder(getServerRequestName() + ".uri.root.apdex.tolerating")
         				.description("App apdex tolerating window counter").register(this.registry);
-        		appApdexTotal = Counter.builder(getServerRequestName())
-        				.tags(Arrays.asList(Tag.of("uri", "root"), Tag.of("apdex", "total")))
+        		appApdexTotal = Counter.builder(getServerRequestName() + ".uri.root.apdex.total")
         				.description("App apdex total window counter").register(this.registry);
         	}
         }
@@ -205,7 +200,7 @@ public class WebMvcMetrics {
 	}
 
 	private Timer.Builder getAppTimerBuilder(TimerConfig config) {
-		Timer.Builder builder = Timer.builder(config.getName()).tags(appTags)
+		Timer.Builder builder = Timer.builder(config.getName())
 				.description("Timer of app servlet request").publishPercentileHistogram(config.histogram);
 		if (config.getPercentiles().length > 0) {
 			builder = builder.publishPercentiles(config.getPercentiles());

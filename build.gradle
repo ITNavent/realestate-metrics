@@ -34,7 +34,8 @@ dependencies {
 	api('com.quigley:zabbixj:3')
 	api('io.micrometer:micrometer-spring-legacy:1.0.0-rc.7')
 	api('io.micrometer:micrometer-registry-jmx:1.0.0-rc.7')
-
+	api('io.micrometer:micrometer-registry-prometheus:1.0.0-rc.7')
+	
 	api('io.opentracing.brave:brave-opentracing:0.26.0')
 	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.3.1')
 	api('io.opentracing.contrib:opentracing-spring-cloud-starter:0.1.0')
