@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
-import com.navent.realestate.metrics.MetricsProperties;
+import com.navent.realestate.metrics.NaventMetricsProperties;
 
 import brave.Tracing;
 import brave.opentracing.BraveTracer;
@@ -17,12 +17,12 @@ import zipkin2.reporter.Sender;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 @Configuration
-@EnableConfigurationProperties(MetricsProperties.class)
+@EnableConfigurationProperties(NaventMetricsProperties.class)
 @ConditionalOnProperty(name = "metrics.trace.enabled", havingValue = "true", matchIfMissing = false)
 public class TraceConfig {
 
 	@Bean
-	public io.opentracing.Tracer tracer(MetricsProperties metricsProperties) {
+	public io.opentracing.Tracer tracer(NaventMetricsProperties metricsProperties) {
 		Assert.notNull(metricsProperties.getTrace().getSenderEndpoint(), "Metrics Trace sender endpoint is mandatory");
 		Assert.notNull(metricsProperties.getTrace().getServiceName(), "Metrics Trace service name is mandatory");
 
