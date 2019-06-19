@@ -8,9 +8,15 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 
 ## Versiones
 
-A partir de la version 0.0.6 se suma tracing de operacion gracias a http://opentracing.io/
+### Version 0.0.6
 
-A partir de la version 0.0.7 se suman métricas de error rate a nivel aplicacion y a nivel endpoint. Además se agrega el apdex a nivel aplicacion. https://en.wikipedia.org/wiki/Apdex 
+Se suma tracing de operacion gracias a http://opentracing.io/
+
+Agregar en zabbix el temaplate **Springboot JMX**
+
+### Version 0.0.7
+
+Se suman métricas de error rate a nivel aplicacion y a nivel endpoint. Además se agrega el apdex a nivel aplicacion. https://en.wikipedia.org/wiki/Apdex 
 
 Comenzando con esta version se necesita agregar a las properties de la aplicacion el siguiente valor.
 ```
@@ -20,6 +26,21 @@ management:
 ```
 Esto es necesario para poder agregar nuevos tipos de contadores, includos en la version 0.0.7
 
+Agregar en zabbix el temaplate **Springboot JMX**
+
+### Version 0.0.8
+
+Agregar en zabbix el temaplate **Springboot JMX v2**
+
+Comenzando con esta version se necesita agregar a las properties de la aplicacion el siguiente valor.
+```
+management:
+  metrics.export:
+    jmx.enabled: true
+```
+Se actualiza a la ultima version de micrometer v1.1.4
+
+Se suma endpoint de prometheus en /manage/prometheus, pero solo se expone la metrica usada para autoescalar pods: http_server_requests_uri_root_1_min_request_rate_total 
 
 ## Properties de configuracion
 
@@ -43,7 +64,3 @@ metrics:
     enabled: false
     millis: numeric
 ```
-
-## Template en zabbix
-
-Agregar en zabbix el temaplate **Springboot JMX**
