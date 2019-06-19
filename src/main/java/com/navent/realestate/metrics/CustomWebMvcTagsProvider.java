@@ -18,8 +18,7 @@ public class CustomWebMvcTagsProvider implements WebMvcTagsProvider {
 	}
 
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request, HttpServletResponse response, Throwable ex) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, response)/*,
-	            WebMvcTags.exception(ex), WebMvcTags.status(response)*/);
+	public Iterable<Tag> httpRequestTags(HttpServletRequest request, HttpServletResponse response, Object handler, Throwable ex) {
+		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, response));
 	}
 }

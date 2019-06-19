@@ -30,10 +30,11 @@ jar {
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
 	api('javax.servlet:javax.servlet-api:3.1.0')
-	api('io.micrometer:micrometer-core:1.0.0-rc.7')
 	api('com.quigley:zabbixj:3')
-	api('io.micrometer:micrometer-spring-legacy:1.0.0-rc.7')
-	api('io.micrometer:micrometer-registry-jmx:1.0.0-rc.7')
+	api("io.micrometer:micrometer-core:$micrometerVersion")
+	api("io.micrometer:micrometer-spring-legacy:$micrometerVersion")
+	api("io.micrometer:micrometer-registry-jmx:$micrometerVersion")
+	api("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
 
 	api('io.opentracing.brave:brave-opentracing:0.26.0')
 	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.3.1')
@@ -42,10 +43,11 @@ dependencies {
 	api('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.3')
 
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
-	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.9')
-	compileOnly('org.springframework.boot:spring-boot-autoconfigure:1.5.6.RELEASE')
-	compileOnly("org.springframework.boot:spring-boot-starter-actuator:1.5.6.RELEASE")
-	compileOnly('org.apache.commons:commons-lang3:3.5')
+	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.11.3')
+	compileOnly("org.springframework.boot:spring-boot-autoconfigure:$springbootVersion")
+	compileOnly("org.springframework.boot:spring-boot-starter-actuator:$springbootVersion")
+	compileOnly("org.springframework.boot:spring-boot-starter-web:$springbootVersion")
+	compileOnly('org.apache.commons:commons-lang3:3.9')
 
 	// Use JUnit test framework
 	//testImplementation 'junit:junit:4.12'
