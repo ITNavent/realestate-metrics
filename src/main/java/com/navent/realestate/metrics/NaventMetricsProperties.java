@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@Configuration
 @ConfigurationProperties("metrics")
 public class NaventMetricsProperties {
 	private boolean enabled;
