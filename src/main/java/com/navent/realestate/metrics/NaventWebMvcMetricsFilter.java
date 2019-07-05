@@ -1,8 +1,7 @@
 package com.navent.realestate.metrics;
 
 import com.codahale.metrics.Meter;
-import com.navent.realestate.metrics.config.NaventMetricsProperties;
-import com.navent.realestate.metrics.config.NaventMetricsProperties.Apdex;
+import com.navent.realestate.metrics.NaventMetricsProperties.Apdex;
 import com.navent.realestate.metrics.meter.SmoothlyDecayingRollingCounterMeter;
 
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;

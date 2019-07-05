@@ -2,6 +2,7 @@ package com.navent.realestate.metrics.config;
 
 
 import com.navent.realestate.metrics.CustomWebMvcTagsProvider;
+import com.navent.realestate.metrics.NaventMetricsProperties;
 import com.navent.realestate.metrics.NaventWebMvcMetricsFilter;
 import com.navent.realestate.metrics.filter.MetricsInterceptor;
 import com.navent.realestate.metrics.zabbixj.CounterMetricsProvider;
