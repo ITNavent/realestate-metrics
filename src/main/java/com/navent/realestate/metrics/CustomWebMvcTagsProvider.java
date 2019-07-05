@@ -21,6 +21,7 @@ public class CustomWebMvcTagsProvider implements WebMvcTagsProvider {
 
 	@Override
 	public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
-		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, null));
+		Tag uri = WebMvcTags.uri(request, null);
+		return Tags.of(WebMvcTags.method(request), Tag.of(uri.getKey(), uri.getValue().replaceAll("\\*", "")));
 	}
 }

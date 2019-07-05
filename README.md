@@ -8,6 +8,23 @@ También genera metricas agregadas a nivel aplicacion y cantidad de respuesta se
 
 ## Versiones
 
+### Version 0.1.8
+
+Version con soporte para Springboot 2, para usar con Springboot 1 usar la version 0.0.8
+
+Agregar en zabbix el temaplate **Springboot JMX v2**
+
+Comenzando con esta version se necesita agregar a las properties de la aplicacion el siguiente valor.
+```
+management:
+  metrics.export:
+    jmx.enabled: true
+```
+Se actualiza a la ultima version de micrometer v1.1.4
+
+Se suma endpoint de prometheus en /manage/prometheus, pero solo se expone la metrica usada para autoescalar pods: http_server_requests_uri_root_1_min_request_rate_total 
+
+
 ### Version 0.1.0
 
 Primera version con soporte Springboot 2.
@@ -20,9 +37,23 @@ management:
 ```
 Por lo que se __debe__ borrar esa parte de la configuracion.
 
+### Version 0.0.8
+
+Agregar en zabbix el temaplate **Springboot JMX v2**
+
+Comenzando con esta version se necesita agregar a las properties de la aplicacion el siguiente valor.
+```
+management:
+  metrics.export:
+    jmx.enabled: true
+```
+Se actualiza a la ultima version de micrometer v1.1.4
+
+Se suma endpoint de prometheus en /manage/prometheus, pero solo se expone la metrica usada para autoescalar pods: http_server_requests_uri_root_1_min_request_rate_total 
+
 ### Version 0.0.7
 
-A partir de la version 0.0.7 se suman métricas de error rate a nivel aplicacion y a nivel endpoint. Además se agrega el apdex a nivel aplicacion. https://en.wikipedia.org/wiki/Apdex 
+Se suman métricas de error rate a nivel aplicacion y a nivel endpoint. Además se agrega el apdex a nivel aplicacion. https://en.wikipedia.org/wiki/Apdex 
 
 Comenzando con esta version se necesita agregar a las properties de la aplicacion el siguiente valor.
 ```
@@ -32,9 +63,12 @@ management:
 ```
 Esto es necesario para poder agregar nuevos tipos de contadores, includos en la version 0.0.7
 
-###Version 0.0.6
- 
+### Version 0.0.6
+
 Se suma tracing de operacion gracias a http://opentracing.io/
+
+Agregar en zabbix el temaplate **Springboot JMX**
+
 
 ## Properties de configuracion
 
@@ -58,7 +92,3 @@ metrics:
     enabled: false
     millis: numeric
 ```
-
-## Template en zabbix
-
-Agregar en zabbix el temaplate **Springboot JMX**
