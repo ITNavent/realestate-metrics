@@ -1,4 +1,4 @@
-package com.navent.realestate.metrics.config;
+package com.navent.realestate.metrics;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@Configuration
 @ConfigurationProperties("metrics")
 public class NaventMetricsProperties {
 	private boolean enabled;

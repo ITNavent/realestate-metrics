@@ -1,9 +1,8 @@
 plugins {
     id 'io.franzbecker.gradle-lombok' version '1.12'
 	id 'java-library'
-	id 'net.researchgate.release' version '2.4.0'
+	id 'net.researchgate.release' version '2.6.0'
 	id 'eclipse'
-	//id 'org.springframework.boot' version '1.5.7.RELEASE'
 }
 
 repositories {
@@ -13,11 +12,6 @@ repositories {
 	mavenLocal()
     jcenter()
 }
-
-/*lombok {
-	version = "1.16.18"
-	sha256 = ""
-}*/
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -29,27 +23,23 @@ jar {
 
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
-	api('javax.servlet:javax.servlet-api:3.1.0')
-	api('io.micrometer:micrometer-core:1.0.3')
+	implementation('javax.servlet:javax.servlet-api:3.1.0')
 	api('com.quigley:zabbixj:3')
-	//api('io.micrometer:micrometer-spring-legacy:1.0.0-rc.7')
-	api('io.micrometer:micrometer-registry-jmx:1.0.3')
+	api("io.micrometer:micrometer-core:$micrometerVersion")
+	api("io.micrometer:micrometer-registry-jmx:$micrometerVersion")
+	api("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
 
-	api('io.opentracing.brave:brave-opentracing:0.26.0')
-	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.3.1')
-	api('io.opentracing.contrib:opentracing-spring-cloud-starter:0.1.0')
+	api('io.opentracing.brave:brave-opentracing:0.34.1')
+	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.9.0')
 
-	api('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.3')
+	implementation('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.3')
 
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
-	compileOnly('com.fasterxml.jackson.core:jackson-databind:2.8.9')
-	compileOnly('org.springframework.boot:spring-boot-autoconfigure:2.0.1.RELEASE')
-	compileOnly("org.springframework.boot:spring-boot-starter-actuator:2.0.1.RELEASE")
-	compileOnly("org.springframework.boot:spring-boot-starter-web:2.0.1.RELEASE")
-	compileOnly('org.apache.commons:commons-lang3:3.5')
-
-	// Use JUnit test framework
-	//testImplementation 'junit:junit:4.12'
+	implementation('com.fasterxml.jackson.core:jackson-databind:2.8.11.3')
+	implementation("org.springframework.boot:spring-boot-autoconfigure:$springbootVersion")
+	implementation("org.springframework.boot:spring-boot-starter-actuator:$springbootVersion")
+	implementation("org.springframework.boot:spring-boot-starter-web:$springbootVersion")
+	implementation('org.apache.commons:commons-lang3:3.9')
 }
 
 //https://github.com/researchgate/gradle-release

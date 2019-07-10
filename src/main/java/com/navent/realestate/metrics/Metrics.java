@@ -9,14 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Meter.Id;
-import io.micrometer.core.instrument.Meter.Type;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.core.lang.Nullable;
 
 public class Metrics {
+	private static MeterRegistry meterRegistry;
+	
 	private static final Set<ZabbixRegisteredMetric> customMetricRegistry = ConcurrentHashMap.newKeySet();
 
 	/**
@@ -42,11 +44,10 @@ public class Metrics {
      * statement.
      */
     public static <T extends Number> T gauge(String name, Iterable<Tag> tags, T number) {
-    	T g = io.micrometer.core.instrument.Metrics.gauge(name, tags, number);
-    	Id id = new Id(name, tags, "", "", Type.GAUGE);
-        String hierarchicalName = HierarchicalNameMapper.DEFAULT.toHierarchicalName(id, NamingConvention.camelCase);
+    	Gauge g = Gauge.builder(name, number, Number::doubleValue).tags(tags).register(meterRegistry);
+        String hierarchicalName = HierarchicalNameMapper.DEFAULT.toHierarchicalName(g.getId(), NamingConvention.camelCase);
         customMetricRegistry.add(new ZabbixRegisteredMetric(hierarchicalName, ZabbixRegisteredMetricType.gauge));
-        return g;
+        return number;
     }
 
     /**
@@ -69,12 +70,11 @@ public class Metrics {
      * statement.
      */
     @Nullable
-    public static <T> T gauge(String name, Iterable<Tag> tags, T obj, ToDoubleFunction<T> valueFunction) {
-    	T g = io.micrometer.core.instrument.Metrics.gauge(name, tags, obj, valueFunction);
-    	Id id = new Id(name, tags, "", "", Type.GAUGE);
-        String hierarchicalName = HierarchicalNameMapper.DEFAULT.toHierarchicalName(id, NamingConvention.camelCase);
+    public static <T> Double gauge(String name, Iterable<Tag> tags, T obj, ToDoubleFunction<T> valueFunction) {
+    	Gauge g = Gauge.builder(name, obj, valueFunction).tags(tags).register(meterRegistry);
+        String hierarchicalName = HierarchicalNameMapper.DEFAULT.toHierarchicalName(g.getId(), NamingConvention.camelCase);
         customMetricRegistry.add(new ZabbixRegisteredMetric(hierarchicalName, ZabbixRegisteredMetricType.gauge));
-        return g;
+        return g.value();
     }
 
     public static Set<ZabbixRegisteredMetric> getCustomMetricRegistryView() {
