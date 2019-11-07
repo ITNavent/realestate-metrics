@@ -29,13 +29,13 @@ dependencies {
 	api("io.micrometer:micrometer-registry-jmx:$micrometerVersion")
 	api("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
 
-	api('io.opentracing.brave:brave-opentracing:0.34.1')
-	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.9.0')
+	api('io.opentracing.brave:brave-opentracing:0.35.0')
+	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.11.0')
 
-	implementation('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.3')
+	implementation('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.5')
 
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
-	implementation('com.fasterxml.jackson.core:jackson-databind:2.8.11.3')
+	implementation('com.fasterxml.jackson.core:jackson-databind:2.10.0')
 	implementation("org.springframework.boot:spring-boot-autoconfigure:$springbootVersion")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:$springbootVersion")
 	implementation("org.springframework.boot:spring-boot-starter-web:$springbootVersion")
