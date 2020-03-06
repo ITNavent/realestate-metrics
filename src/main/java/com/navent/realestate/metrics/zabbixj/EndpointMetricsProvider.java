@@ -1,9 +1,6 @@
 package com.navent.realestate.metrics.zabbixj;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -38,10 +35,13 @@ public class EndpointMetricsProvider implements MetricsProvider {
 	@EventListener
 	public void handleContextRefresh(ContextRefreshedEvent event) {
 		ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
-		Map<RequestMappingInfo, HandlerMethod> handlerMethods = applicationContext
-				.getBean(RequestMappingHandlerMapping.class).getHandlerMethods();
+		Set<Map.Entry<RequestMappingInfo, HandlerMethod>> entries = new HashSet<>();
+		Map<String, RequestMappingHandlerMapping> beansOfType = applicationContext.getBeansOfType(RequestMappingHandlerMapping.class);
+		for (RequestMappingHandlerMapping value : beansOfType.values()) {
+			entries.addAll(value.getHandlerMethods().entrySet());
+		}
 		endpoints.clear();
-		handlerMethods.entrySet().forEach(h -> {
+		entries.forEach(h -> {
 			String uri = h.getKey().getPatternsCondition().getPatterns().iterator().next();
 			if (pattern.matcher(uri).matches()) {
 				String method = h.getKey().getMethodsCondition().getMethods().iterator().next().toString();
