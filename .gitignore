@@ -13,6 +13,7 @@ gradle-app.setting
 *.ipr
 *.iws
 /bin/
+.idea/
 
 #Eclipse
 .classpath
