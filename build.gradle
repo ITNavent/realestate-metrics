@@ -29,8 +29,10 @@ dependencies {
 	api("io.micrometer:micrometer-registry-jmx:$micrometerVersion")
 	api("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
 
-	api('io.opentracing.brave:brave-opentracing:0.35.0')
-	api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.11.0')
+	//api('io.opentracing.brave:brave-opentracing:0.35.0')
+	//api('io.zipkin.reporter2:zipkin-sender-urlconnection:2.11.0')
+	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-sleuth-zipkin
+	//api('org.springframework.cloud:spring-cloud-sleuth-zipkin:2.1.5.RELEASE')
 
 	implementation('com.github.vladimir-bukhtoyarov:rolling-metrics:2.0.5')
 
