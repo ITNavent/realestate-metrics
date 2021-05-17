@@ -67,13 +67,7 @@ public class MetricsConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MeterRegistryCustomizer<PrometheusMeterRegistry> prometheusMetricsNamingConvention(
 			MetricsProperties properties) {
-		return registry -> registry.config().meterFilter(MeterFilter.deny(new Predicate<Meter.Id>() {
-			@Override
-			public boolean test(Meter.Id id) {
-				return !id.getName().equals(
-						properties.getWeb().getServer().getRequestsMetricName() + ".uri.root.1.min.request.rate");
-			}
-		}));
+		return registry -> registry.config().meterFilter(MeterFilter.accept());
 	}
 
 	@SuppressWarnings("deprecation")
